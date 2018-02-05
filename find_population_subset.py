@@ -1,3 +1,5 @@
+#!/usr/bin/env python3 
+
 # Created by: David Bulnes
 # 2/4/18
 # Copyright 2018, David Bulnes
@@ -12,7 +14,9 @@
 # Can you find a subset of these areas where a total of exactly 100,000,000 people live, assuming the census estimates
 # are exactly right? Provide the answer and code or reasoning used.
 ###################
+#
 # Solution and rationale:
+# 
 # Approaching this problem from a generic standpoint, we really want to find all subsets 's' in a given set 'S',
 # of size 'N', whose integer elements sum exactly to our target sum value, 'T'.
 #
@@ -25,25 +29,27 @@
 # than the size of our data we iterate over, 'N' (26 population_list/cities), yielding a runtime complexity of O(T*N)
 
 # When summing population subsets (or any positive integer subset), we care about combinations not permutations,
-# as addition is commutative. For a set S of size N, there exists 2^N combinatoric subsets of S, which can be
-# proven using induction and some simple test cases with N = 2 or 3. Given there are 2^N possible population subsets,
-# we must sum these 2^N subsets to look for our . Thus we arrive at an approximate runtime of = O(2^N), thus removing
-#  the targetSum population, 'T', from influencing runtime complexity.
+# as addition is commutative. For a set 'S' of size 'N', there exists 2^N combinatoric subsets of 'S', which can be
+# proven using induction and some simple test cases with 'N' = 2 or 3. Given there are 2^N possible population subsets,
+# we must sum each of these 2^N subsets to look for our match. We arrive at an approximate runtime of = O(2^N), 
+# thus removing the target sum population, 'T', from influencing runtime complexity.
 
 # It is notable that the problem statement asks to find a single subset that sums to our total, rather than
 # all possible subsets that match this criteria. This means we exit as soon as we find the first matching subset.
 # This program could be easily modified to append all matching population subset tuples to a returned list.
 # It can be similarly modified to return the first N numbers of matching population subsets. Logically, returning
-# all matching population subsets leads to the longest execution time.
-
-# The combinations() function from itertools provides a very convenient generator that yields all combinations of
-# a given size, from a given list.
+# all matching population subsets leads to the longest possible execution time, other than the case where the sum 'T'
+# is not found in any matching subset.
 
 # Answer:
 # There indeed exists a single subset of the given population list whose elements sum to 100,000,000:
 # [18897109, 12828837, 9461105, 6371773, 5946800, 5582170, 5268860, 4552402, 4335391, 4296250, 4224851,
 # 3279833, 3095313, 2812896, 2543482, 2226009, 2142508, 2134411]
-#
+
+# The python program written to solve for this answer is as follows:
+
+# The combinations() function from itertools provides a very convenient generator that yields all combinations of
+# a given size, from a given list.
 from itertools import combinations
 import time
 
@@ -63,10 +69,11 @@ def find_matching_subset(population_list, target_sum):
         population_list: list of population_list (positive integers)
         target_sum: the sum (positive integer) of population_list we are looking for, using subsets of population_list
     """
+
     # Find the total sum of all population_list and check for some base cases
     total_population_sum = sum(population_list)
-    # If the target population sum is equal to the summation of the full population set, return population_list
-    # Also return if we have an empty population set (a sum of 0)
+    # If the target population sum is equal to the summation of the full population set, return population_list.
+    # Also return if we have an empty population set (a sum of 0).
     if total_population_sum == target_sum or total_population_sum == 0:
         return population_list
 
@@ -87,7 +94,7 @@ def find_matching_subset(population_list, target_sum):
         # is proportional to the magnitude difference between our individual populations and the target_sum,
         # and thus is potentially zero for arguments where the magnitude difference is small.
         if sum(population_list[0:subset_depth]) < target_sum:
-            continue  # skip this depth
+            continue  # skip this iteration
         for population_subset in combinations(population_list, subset_depth):
             if sum(population_subset) == target_sum:
                 return population_subset  # return our matching subset
@@ -96,12 +103,17 @@ def find_matching_subset(population_list, target_sum):
 
 
 if __name__ == "__main__":
+    print("Full population set:\n%s\n" % populations)
+    print("Target population sum: %s\n" % target)
     start_time = time.time()  # record our start time
+
     result = find_matching_subset(populations, target)
+    
     end_time = (time.time() - start_time)  # record our end time
 
     if result:
-        print "Found population subset that sums to %s in %s seconds:" % (target, end_time)
-        print result
+        print("Found population subset that sums to %s:\n%s\n" % (target, result))
     else:
-        print "Failed to find a matching population subset in %s seconds" % end_time
+        print("Failed to find a matching population subset.\n")
+        
+    print("Took %s seconds" % end_time)
