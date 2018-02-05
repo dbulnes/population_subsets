@@ -1,7 +1,7 @@
 To execute this program:
 
 ```
-cd integer_perfect_sum
+cd population_subsets
 ```
 
 Followed by:
